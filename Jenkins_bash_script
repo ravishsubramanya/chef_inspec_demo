@@ -1,0 +1,11 @@
+#!/bin/bash
+
+TESTDIR="/var/lib/jenkins/Source/chef_inspec_demo"
+
+OUTPUT=$(inspec exec $TESTDIR --reporter=progress \
+  | grep -E 'examples.*failures.*pending' \
+  | awk '{ s = 100 * ($1 - $3) / $1; print "Summary: " $0 "\n%Compliance: " s }')
+
+LOG=$(grep '%Compliance' <<< $OUTPUT)
+
+echo $LOG | logger -i -t inspec
